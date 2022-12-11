@@ -8,7 +8,7 @@ from telebot import util
 
 bot = telebot.TeleBot(token = config.token)
 
-@bot.message_handler(commands=['start'])  #start
+@bot.message_handler(commands=['start'])  #start, отправляет сообщение с картинкой по адресу
 def start_message(message):
 
 	#keyboard 1
@@ -29,8 +29,12 @@ def inline_data_message(message):
 		bot.send_message(message.chat.id,"в дальнейшей доработке")
 	
 	elif(message.text.lower()=="help"):
-		bot.send_message(message.chat.id,"в дальнейшей доработке")
+		markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
+		item11 = types.KeyboardButton("Суть бота (если не понятна).")
+		item21 = types.KeyboardButton("Документация по командам.")
+		markup1.add(item11,item21)
 
+		bot.send_message(message.chat.id,text = "<b>Выберите снизу кнопку для дальнейшей работы.</b>",parse_mode='html',reply_markup=markup1)
 	elif (message.text.lower()=="суть бота (если не понятна)."):
 		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о будущих матчах.\n\n".format(bot.get_me()),
 		parse_mode='html')
@@ -38,7 +42,7 @@ def inline_data_message(message):
 	else:
 
 		#keyboard 2
-		markup = types.InlineKeyboardMarkup(row_width=3)
+		markup = types.InlineKeyboardMarkup(row_width=2)
 		item3 = types.InlineKeyboardButton("Предстоящие матчи", callback_data='match')
 		item4 = types.InlineKeyboardButton("help", callback_data='help')
 		markup.add(item3,item4)
@@ -49,7 +53,7 @@ def inline_data_message(message):
 @bot.callback_query_handler(func=lambda call: True)  #ответ на вызов inline button'ov
 def callback_inline(call):
 	if call.message:
-		
+
 		if (call.data == 'help'):
 			
 			kortezh=()
