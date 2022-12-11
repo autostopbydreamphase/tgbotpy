@@ -68,6 +68,10 @@ def callback_inline(call):
 
 		elif(call.data == 'match'):
 			bot.send_message(call.message.chat.id,'///')
+
+        # удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
+		bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.", 
+            reply_markup=None)
 			
 		
 #inline keyboard 3
