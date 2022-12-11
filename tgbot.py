@@ -16,6 +16,7 @@ def start_message(message):
 	item1 = types.KeyboardButton("help")
 	item2 = types.KeyboardButton("Предстоящие матчи")
 	markup.add(item2,item1)
+
 	bot.send_photo(message.chat.id, get("https://i.pinimg.com/564x/3f/22/e3/3f22e3170ce6eca2d6ecf121f191bf9f.jpg").content) #.content, чтобы получить конкретно картинку, а не список байтов по запросу
 	bot.send_message(message.chat.id,text = "Привет, <b>{0.first_name}</b>!\nЯ - <b>{1.first_name}</b>, бот созданный для предоставления информации о будущих матчах,\nвыберите один из вариантов действий снизу.".format(message.from_user,bot.get_me()),
 		parse_mode='html',reply_markup=markup)
@@ -23,13 +24,17 @@ def start_message(message):
 
 @bot.message_handler(content_types=['text'])  #ответ на сообщения button'ov
 def inline_data_message(message): 
+
 	if(message.text.lower()=="предстоящие матчи"):
 		bot.send_message(message.chat.id,"в дальнейшей доработке")
+	
 	elif(message.text.lower()=="help"):
 		bot.send_message(message.chat.id,"в дальнейшей доработке")
+
 	elif (message.text.lower()=="суть бота (если не понятна)."):
 		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о будущих матчах.\n\n".format(bot.get_me()),
 		parse_mode='html')
+
 	else:
 
 		#keyboard 2
@@ -44,6 +49,7 @@ def inline_data_message(message):
 @bot.callback_query_handler(func=lambda call: True)  #ответ на вызов inline button'ov
 def callback_inline(call):
 	if call.message:
+		
 		if (call.data == 'help'):
 			
 			kortezh=()
@@ -55,6 +61,7 @@ def callback_inline(call):
 			markup.add(item1,item2)
 
 			bot.send_message(call.message.chat.id,text = "<b>Выберите снизу кнопку для дальнейшей работы.</b>",parse_mode='html',reply_markup=markup)
+
 		elif(call.data == 'match'):
 			bot.send_message(call.message.chat.id,'///')
 			
