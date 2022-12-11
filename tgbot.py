@@ -1,13 +1,14 @@
 import config
 import telebot
-#import requests  #нужно ли импортировать библиотеку? или можно просто из неё импортировать то, что нам надо?...
+from bs4 import BeautifulSoup
+import requests  #библиотека нужна для парсинга ,нужно ли импортировать библиотеку? или можно просто из неё импортировать то, что нам надо?...
 from requests import get
 from telebot import types
 from telebot import util
 
 bot = telebot.TeleBot(token = config.token)
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start'])  #start
 def start_message(message):
 
 	#keyboard 1
@@ -19,12 +20,16 @@ def start_message(message):
 	bot.send_message(message.chat.id,text = "Привет, <b>{0.first_name}</b>!\nЯ - <b>{1.first_name}</b>, бот созданный для предоставления информации о будущих матчах,\nвыберите один из вариантов действий снизу.".format(message.from_user,bot.get_me()),
 		parse_mode='html',reply_markup=markup)
 
-@bot.message_handler(content_types=['text'])
+
+@bot.message_handler(content_types=['text'])  #ответ на сообщения button'ov
 def inline_data_message(message): 
 	if(message.text.lower()=="предстоящие матчи"):
-		bot.send_message(message.chat.id,"1")
+		bot.send_message(message.chat.id,"в дальнейшей доработке")
 	elif(message.text.lower()=="help"):
-		bot.send_message(message.chat.id,"2")
+		bot.send_message(message.chat.id,"в дальнейшей доработке")
+	elif (message.text.lower()=="суть бота (если не понятна)."):
+		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о будущих матчах.\n\n".format(bot.get_me()),
+		parse_mode='html')
 	else:
 
 		#keyboard 2
@@ -34,5 +39,33 @@ def inline_data_message(message):
 		markup.add(item3,item4)
 
 		bot.send_message(message.chat.id, "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.",reply_markup=markup)
+
+
+@bot.callback_query_handler(func=lambda call: True)  #ответ на вызов inline button'ov
+def callback_inline(call):
+	if call.message:
+		if (call.data == 'help'):
+			
+			kortezh=()
+
+			#keyboard 3
+			markup = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
+			item1 = types.KeyboardButton("Суть бота (если не понятна).")
+			item2 = types.KeyboardButton("Документация по командам.")
+			markup.add(item1,item2)
+
+			bot.send_message(call.message.chat.id,text = "<b>Выберите снизу кнопку для дальнейшей работы.</b>",parse_mode='html',reply_markup=markup)
+		elif(call.data == 'match'):
+			bot.send_message(call.message.chat.id,'///')
+			
+		
+#inline keyboard 3
+#markup=types.InlineKeyboardMarkup(row_width=2)
+#item1=types.InlineKeyboardButton("Суть бота (если не понятна).",callback_data='func')
+#item2=types.InlineKeyboardButton("Документация по командам.",callback_data='doc')	
+
+#@bot.message_handler(commands=['start'])
 #@bot.message_handler(content_types=['text'])
+#@bot.callback_query_handler(func=lambda call: True)
+
 bot.polling(none_stop=True)
