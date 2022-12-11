@@ -1,5 +1,7 @@
 import config
 import telebot
+#import requests  #нужно ли импортировать библиотеку? или можно просто из неё импортировать то, что нам надо?...
+from requests import get
 from telebot import types
 from telebot import util
 
@@ -13,7 +15,7 @@ def start_message(message):
 	item1 = types.KeyboardButton("help")
 	item2 = types.KeyboardButton("Предстоящие матчи")
 	markup.add(item2,item1)
-
+	bot.send_photo(message.chat.id, get("https://i.pinimg.com/564x/3f/22/e3/3f22e3170ce6eca2d6ecf121f191bf9f.jpg").content) #.content, чтобы получить конкретно картинку, а не список байтов по запросу
 	bot.send_message(message.chat.id,text = "Привет, <b>{0.first_name}</b>!\nЯ - <b>{1.first_name}</b>, бот созданный для предоставления информации о будущих матчах,\nвыберите один из вариантов действий снизу.".format(message.from_user,bot.get_me()),
 		parse_mode='html',reply_markup=markup)
 
@@ -26,7 +28,7 @@ def inline_data_message(message):
 	else:
 
 		#keyboard 2
-		markup = types.InlineKeyboardMarkup(row_width=2)
+		markup = types.InlineKeyboardMarkup(row_width=3)
 		item3 = types.InlineKeyboardButton("Предстоящие матчи", callback_data='match')
 		item4 = types.InlineKeyboardButton("help", callback_data='help')
 		markup.add(item3,item4)
