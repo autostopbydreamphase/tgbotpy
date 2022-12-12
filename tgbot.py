@@ -56,7 +56,7 @@ def callback_inline(call):
 
 		if (call.data == 'help'):
 			
-			kortezh=()
+			kortezh=() #надо добавить какой-то кортеж (возможно будет в каждом элементе картежа - 1 функция бота)
 
 			#keyboard 3
 			markup = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
