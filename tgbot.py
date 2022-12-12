@@ -18,7 +18,7 @@ def start_message(message):
 	markup.add(item2,item1)
 
 	bot.send_photo(message.chat.id, get("https://i.pinimg.com/564x/3f/22/e3/3f22e3170ce6eca2d6ecf121f191bf9f.jpg").content) #.content, чтобы получить конкретно картинку, а не список байтов по запросу
-	bot.send_message(message.chat.id,text = "Привет, <b>{0.first_name}</b>!\nЯ - <b>{1.first_name}</b>, бот созданный для предоставления информации о будущих матчах,\nвыберите один из вариантов действий снизу.".format(message.from_user,bot.get_me()),
+	bot.send_message(message.chat.id,text = "Привет, <b>{0.first_name}</b>!\nЯ - <b>{1.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах,\nвыберите один из вариантов действий снизу.".format(message.from_user,bot.get_me()),
 		parse_mode='html',reply_markup=markup)
 
 
@@ -36,7 +36,7 @@ def inline_data_message(message):
 
 		bot.send_message(message.chat.id,text = "<b>Выберите снизу кнопку для дальнейшей работы.</b>",parse_mode='html',reply_markup=markup1)
 	elif (message.text.lower()=="суть бота (если не понятна)."):
-		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о будущих матчах.\n\n".format(bot.get_me()),
+		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах.\n\n".format(bot.get_me()),
 		parse_mode='html')
 		# вернуть на 1 ход назад, т.е. вернуть к выбору двух кнопок: "help", "Предстоящие матчи"
 	else:
@@ -70,8 +70,7 @@ def callback_inline(call):
 			bot.send_message(call.message.chat.id,'///')
 
 		# удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
-		else:
-			bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.", reply_markup=None)
+		bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.", reply_markup=None)
 		# надо обновить клавиатуру, чтобы после полученной информации кнопки снизу менялись на обычные
 		# при ответе на Предстоящие матчи кнопки должны менятся на что-то соответсвующее (например: выбор вида спорта)
 		# (можно использовать обычное добавление клавиатуры к пустому сообщению)
