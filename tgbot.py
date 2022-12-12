@@ -50,7 +50,7 @@ def inline_data_message(message):
 		bot.send_message(message.chat.id, "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.",reply_markup=markup)
 
 
-@bot.callback_query_handler(func=lambda call: True)  #ответ на вызов inline button'ov
+@bot.callback_query_handler(func=lambda call: True)  #ответ на вызов inline button'ov #ф-ция lambda служит для првоерки сообщения, если лямбда возвращает True, сообщение обрабатывается декорированной функцией, чтобы все сообщения обрабатывались этой функцией, мы просто всегда возвращаем True
 def callback_inline(call):
 	if call.message:
 
