@@ -38,7 +38,7 @@ def inline_data_message(message):
 	elif (message.text.lower()=="суть бота (если не понятна)."):
 		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о будущих матчах.\n\n".format(bot.get_me()),
 		parse_mode='html')
-
+		# вернуть на 1 ход назад, т.е. вернуть к выбору двух кнопок: "help", "Предстоящие матчи"
 	else:
 
 		#keyboard 2
@@ -65,16 +65,20 @@ def callback_inline(call):
 			markup.add(item1,item2)
 
 			bot.send_message(call.message.chat.id,text = "<b>Выберите снизу кнопку для дальнейшей работы.</b>",parse_mode='html',reply_markup=markup)
-
+		# вернуть на 1 ход назад, т.е. вернуть к выбору двух кнопок: "help", "Предстоящие матчи"
 		elif(call.data == 'match'):
 			bot.send_message(call.message.chat.id,'///')
 
-        # удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
-		bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.", 
-            reply_markup=None)
+		# удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
+		else:
+			bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.", reply_markup=None)
 		# надо обновить клавиатуру, чтобы после полученной информации кнопки снизу менялись на обычные
 		# при ответе на Предстоящие матчи кнопки должны менятся на что-то соответсвующее (например: выбор вида спорта)
 		# (можно использовать обычное добавление клавиатуры к пустому сообщению)
+
+#	@bot.message_handler(func=lambda c:True, content_types=['text'])#этот блок выполнится если юзер отправит боту сообщение
+#	def info_message(message):
+#		bot.edit_message_reply_markup(message.chat.id, message_id = message.message_id-1, reply_markup = '')# удаляем кнопки у последнего сообщения
 
 #inline keyboard 3
 #markup=types.InlineKeyboardMarkup(row_width=2)
