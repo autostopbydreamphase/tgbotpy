@@ -39,6 +39,11 @@ def inline_data_message(message):
 		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах.\n\n".format(bot.get_me()),
 		parse_mode='html')
 		# вернуть на 1 ход назад, т.е. вернуть к выбору двух кнопок: "help", "Предстоящие матчи"
+
+	elif (message.text.lower()=="Документация по командам."):
+		bot.send_message(message.chat.id,"#".format(bot.get_me()),parse_mode='html')
+		kortezh=() #надо добавить какой-то кортеж (возможно будет в каждом элементе картежа - 1 функция бота)
+		
 	else:
 
 		#keyboard 2
@@ -56,7 +61,7 @@ def callback_inline(call):
 
 		if (call.data == 'help'):
 			
-			kortezh=() #надо добавить какой-то кортеж (возможно будет в каждом элементе картежа - 1 функция бота)
+			
 
 			#keyboard 3
 			markup = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
