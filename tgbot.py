@@ -72,8 +72,10 @@ def callback_inline(call):
         # удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
 		bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.", 
             reply_markup=None)
-			
-		
+		# надо обновить клавиатуру, чтобы после полученной информации кнопки снизу менялись на обычные
+		# при ответе на Предстоящие матчи кнопки должны менятся на что-то соответсвующее (например: выбор вида спорта)
+		# (можно использовать обычное добавление клавиатуры к пустому сообщению)
+
 #inline keyboard 3
 #markup=types.InlineKeyboardMarkup(row_width=2)
 #item1=types.InlineKeyboardButton("Суть бота (если не понятна).",callback_data='func')
