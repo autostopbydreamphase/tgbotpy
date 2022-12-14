@@ -6,6 +6,13 @@ from requests import get
 from telebot import types
 from telebot import util
 
+#parser
+
+#URL = 'https://www.hltv.org/matches'
+reqs = requests.get(config.URL)
+soup = BeautifulSoup(reqs.text,'lxml')
+c=[line.getText()for line in soup.find_all('div',class_='matchTeams text-ellipsis')]
+
 bot = telebot.TeleBot(token = config.token)
 
 @bot.message_handler(commands=['start'])  #start, отправляет сообщение с картинкой по адресу
@@ -26,8 +33,13 @@ def start_message(message):
 def inline_data_message(message): 
 
 	if(message.text.lower()=="предстоящие матчи"):
-		bot.send_message(message.chat.id,"в дальнейшей доработке")
+		i=0
+		while i<len(c):
+			bot.send_message(message.chat.id,str(c[i].replace('\n',' ')))
+			i+=1
 	
+
+
 	elif(message.text.lower()=="help"):
 		markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
 		item11 = types.KeyboardButton("Суть бота (если не понятна).")
@@ -35,15 +47,33 @@ def inline_data_message(message):
 		markup1.add(item11,item21)
 
 		bot.send_message(message.chat.id,text = "<b>Выберите снизу кнопку для дальнейшей работы.</b>",parse_mode='html',reply_markup=markup1)
+
+
+
 	elif (message.text.lower()=="суть бота (если не понятна)."):
+
+	#keyboard 4
+		markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+		item14 = types.KeyboardButton("help")
+		item24 = types.KeyboardButton("Предстоящие матчи")
+		markup4.add(item24,item14)
+
 		bot.send_message(message.chat.id,"Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах.\n\n".format(bot.get_me()),
-		parse_mode='html')
+		parse_mode='html',reply_markup=markup4)
+
 		# вернуть на 1 ход назад, т.е. вернуть к выбору двух кнопок: "help", "Предстоящие матчи"
 
-	elif (message.text.lower()=="Документация по командам."):
-		bot.send_message(message.chat.id,"#".format(bot.get_me()),parse_mode='html')
+	elif (message.text.lower()=="документация по командам."):
+
+	#keyboard 5
+		markup5 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+		item15 = types.KeyboardButton("help")
+		item25 = types.KeyboardButton("Предстоящие матчи")
+		markup5.add(item25,item15)
+
+		bot.send_message(message.chat.id,"#".format(bot.get_me()),parse_mode='html',reply_markup=markup5)
 		kortezh=() #надо добавить какой-то кортеж (возможно будет в каждом элементе картежа - 1 функция бота)
-		
+	
 	else:
 
 		#keyboard 2
@@ -59,9 +89,9 @@ def inline_data_message(message):
 def callback_inline(call):
 	if call.message:
 
+
+
 		if (call.data == 'help'):
-			
-			
 
 			#keyboard 3
 			markup = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
@@ -71,11 +101,19 @@ def callback_inline(call):
 
 			bot.send_message(call.message.chat.id,text = "<b>Выберите снизу кнопку для дальнейшей работы.</b>",parse_mode='html',reply_markup=markup)
 		# вернуть на 1 ход назад, т.е. вернуть к выбору двух кнопок: "help", "Предстоящие матчи"
-		elif(call.data == 'match'):
-			bot.send_message(call.message.chat.id,'///')
+
+
+
+		if(call.data == 'match'):
+			i=0
+			while i<len(c):
+				bot.send_message(call.message.chat.id,str(c[i].replace('\n',' ')))
+				i+=1
 
 		# удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
+
 		bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.", reply_markup=None)
+
 		# надо обновить клавиатуру, чтобы после полученной информации кнопки снизу менялись на обычные
 		# при ответе на Предстоящие матчи кнопки должны менятся на что-то соответсвующее (например: выбор вида спорта)
 		# (можно использовать обычное добавление клавиатуры к пустому сообщению)
