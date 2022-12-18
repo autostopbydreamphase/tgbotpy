@@ -1,18 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
-i=0
+k1=0
 URL = 'https://www.hltv.org/matches'
 reqs = requests.get(URL)
 soup = BeautifulSoup(reqs.text,'lxml')
-c=[line.getText()for line in soup.find_all('div',class_='matchTeams text-ellipsis')]
-while i<len(c):
-	print(c[i].replace('\n','-'))
-	i+=1
-
-
-
-
-
+cdd=[line.getText()for line in soup.find_all('div',class_='matchEventName gtSmartphone-only')]
+while k1<=len(cdd):
+	print(cdd[k1].replace('\n','-'))
+	k1+=1
 
 #URL = 'https://game-tournaments.com/csgo/matches'
 #res = requests.get(URL)
