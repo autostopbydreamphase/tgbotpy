@@ -9,12 +9,19 @@ from telebot import types
 #parser#---------------------------------------------------------------------------------
 
 #URL = 'https://www.hltv.org/matches'
+URL1 = 'https://dota2.ru/esport/matches/'
 reqs = requests.get(config.URL)
 soup = BeautifulSoup(reqs.text,'lxml')
 
 c=[line.getText()for line in soup.find_all('div',class_='matchTeams text-ellipsis')]#список-парсер для названия команд, которые играют
 cd=[line.getText()for line in soup.find_all('div',class_='matchTime')]#список-парсер для игрового времени
 cdd=[line.getText()for line in soup.find_all('div',class_='matchEventName gtSmartphone-only')]#список-парсер для игрового турнира
+
+reqs1=requests.get(URL1)
+soup=BeautifulSoup(reqs1.text,'lxml')
+
+d=[line.getText()for line in soup.find_all('p',class_='cybersport-matches__matches-name')]
+dt=[line.getText()for line in soup.find_all('div',class_='time')]
 
 slovarb={1:'/start  - команда для запуска/презапуска бота, т.е. бот начинает своё функционирование с самого начала\nэто равнозначно перезапуску бота.',2:'/help - команда, предоставляющая информацию о сути бота и его функционале.\nИнформация обновляется каждый раз при выходе новой версии бота.',3:'/match - команда, позволяющая получить информацию о ближайших матчах на неделю.\nЯвляется основой командой бота.'}
 
@@ -39,11 +46,44 @@ def start_message(message):
 def inline_data_message(message): 
 
 	if(message.text.lower()=='предстоящие матчи' or message.text.lower()=='match' or message.text.lower()=='/match'):
+
+		#markup 8
+		markup8 = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
+		item81 = types.KeyboardButton('Counter-Strike:Global Offensive')
+		item82 = types.KeyboardButton('Dota 2')
+		markup8.add(item82,item81)
+		bot.send_message(message.chat.id,'Выберите дисциплину, по которой вы хотите получить матчи.',parse_mode='html', reply_markup=markup8)
+
+	elif(message.text.lower() == 'counter-strike:global offensive'):
 		i=0
 		while i<len(c):# or i<len(cd) or i<len(cdd):
 			bot.send_message(message.chat.id,'GMT+1 '+str(cd[i].replace('\n',' '))+'   |'+str(c[i].replace('\n',' '))+"|   "+str(cdd[i].replace('\n',' ')))
 			i+=1
-		bot.send_message(message.chat.id,'Для справки: время в Беларуси GMT+3.\nТ.е. нужно прибавить +2 часа к времени начала матча.')
+
+		#keyboard 9
+		markup9 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+		item19 = types.KeyboardButton('Help')
+		item29 = types.KeyboardButton('Предстоящие матчи')
+		markup9.add(item29,item19)
+
+		bot.send_message(message.chat.id,'Для справки: время в Беларуси GMT+3.\nТ.е. нужно прибавить +2 часа к времени начала матча.\n<b>LIVE</b> - обозначает, что матч уже идет в live-доступе.\nВсе матчи идут по порядку.',parse_mode='html')
+		bot.send_message(message.chat.id,'Для продолжение работы с ботом выберите кнопку снизу или перезапустите',reply_markup=markup9)
+
+
+	elif(message.text.lower() == 'dota 2'):
+		dt2=0
+		dtt=0
+
+		#keyboard 10
+		markup10 = types.ReplyKeyboardMarkup(resize_keyboard=True)
+		item10 = types.KeyboardButton('Help')
+		item10 = types.KeyboardButton('Предстоящие матчи')
+		markup10.add(item10,item10)
+		while dt2<len(dt)-1:
+			bot.send_message(message.chat.id,str(dt[dtt].replace('Ч',' ч'))+' | '+str(d[dt2])+' vs '+str(d[dt2+1]))
+			dt2+=2
+			dtt+=1
+		bot.send_message(message.chat.id,'Для продолжение работы с ботом выберите кнопку снизу или перезапустите',reply_markup=markup10)
 
 	elif(message.text.lower()=='help' or message.text.lower()=='/help'):
 
@@ -62,8 +102,7 @@ def inline_data_message(message):
 		item24 = types.KeyboardButton('Предстоящие матчи')
 		markup4.add(item24,item14)
 
-		bot.send_message(message.chat.id,'Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах.\n\n'.format(bot.get_me()),
-		parse_mode='html',reply_markup=markup4)
+		bot.send_message(message.chat.id,'Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах.\n\n'.format(bot.get_me()),parse_mode='html',reply_markup=markup4)
 
 	elif (message.text.lower()=='документация по командам'):
 
@@ -107,7 +146,7 @@ def callback_inline(call):
 			while i<len(c):# or i<len(cd) or i<len(cdd):
 				bot.send_message(call.message.chat.id,'GMT+1 '+str(cd[i].replace('\n',' '))+'   |'+str(c[i].replace('\n',' '))+"|   "+str(cdd[i].replace('\n',' ')))
 				i+=1
-			bot.send_message(call.message.chat.id,'Для справки: время в Беларуси GMT+3.\nТ.е. нужно прибавить +2 часа к времени начала матча.')
+			bot.send_message(call.message.chat.id,'Для справки: время в Беларуси GMT+3.\nТ.е. нужно прибавить +2 часа к времени начала матча.\n<b>LIVE</b> - обозначает, что матч уже идет в live-доступе.\nВсе матчи идут по порядку.',parse_mode='html')
 
 		elif(call.data == 'back'):
 
