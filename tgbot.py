@@ -1,21 +1,24 @@
 import config
 import telebot
 from bs4 import BeautifulSoup
-import requests  #библиотека нужна для парсинга ,нужно ли импортировать библиотеку? или можно просто из неё импортировать то, что нам надо?...
+import requests
 from requests import get
 from telebot import types
 #from telebot import util
 
-#parser
+#parser#---------------------------------------------------------------------------------
 
 #URL = 'https://www.hltv.org/matches'
 reqs = requests.get(config.URL)
 soup = BeautifulSoup(reqs.text,'lxml')
-c=[line.getText()for line in soup.find_all('div',class_='matchTeams text-ellipsis')]
 
+c=[line.getText()for line in soup.find_all('div',class_='matchTeams text-ellipsis')]#список-парсер для названия команд, которые играют
+cd=[line.getText()for line in soup.find_all('div',class_='matchTime')]#список-парсер для игрового времени
+cdd=[line.getText()for line in soup.find_all('div',class_='matchEventName gtSmartphone-only')]#список-парсер для игрового турнира
 
 slovarb={1:'/start  - команда для запуска/презапуска бота, т.е. бот начинает своё функционирование с самого начала\nэто равнозначно перезапуску бота.',2:'/help - команда, предоставляющая информацию о сути бота и его функционале.\nИнформация обновляется каждый раз при выходе новой версии бота.',3:'/match - команда, позволяющая получить информацию о ближайших матчах на неделю.\nЯвляется основой командой бота.'}
 
+#Bot#------------------------------------------------------------------------------------
 
 bot = telebot.TeleBot(token = config.token)
 
@@ -32,27 +35,26 @@ def start_message(message):
 	bot.send_message(message.chat.id,text = 'Привет, <b>{0.first_name}</b>!\nЯ - <b>{1.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах,\nвыберите один из вариантов действий снизу.'.format(message.from_user,bot.get_me()),
 		parse_mode='html',reply_markup=markup)
 
-
 @bot.message_handler(content_types=['text'])  #ответ на сообщения button'ov
 def inline_data_message(message): 
 
 	if(message.text.lower()=='предстоящие матчи' or message.text.lower()=='match' or message.text.lower()=='/match'):
 		i=0
-		while i<len(c):
-			bot.send_message(message.chat.id,str(c[i].replace('\n',' ')))
+		while i<len(c):# or i<len(cd) or i<len(cdd):
+			bot.send_message(message.chat.id,'GMT+1 '+str(cd[i].replace('\n',' '))+'   |'+str(c[i].replace('\n',' '))+"|   "+str(cdd[i].replace('\n',' ')))
 			i+=1
+		bot.send_message(message.chat.id,'Для справки: время в Беларуси GMT+3.\nТ.е. нужно прибавить +2 часа к времени начала матча.')
 
 	elif(message.text.lower()=='help' or message.text.lower()=='/help'):
+
 		markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
-		item11 = types.KeyboardButton('Суть бота (если не понятна).')
-		item21 = types.KeyboardButton('Документация по командам.')
+		item11 = types.KeyboardButton('Суть бота (если не понятна)')
+		item21 = types.KeyboardButton('Документация по командам')
 		markup1.add(item11,item21)
 
 		bot.send_message(message.chat.id,text = '<b>Выберите снизу кнопку для дальнейшей работы.</b>',parse_mode='html',reply_markup=markup1)
 
-
-
-	elif (message.text.lower()=='суть бота (если не понятна).'):
+	elif (message.text.lower()=='суть бота (если не понятна)'):
 
 	#keyboard 4
 		markup4 = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -63,13 +65,14 @@ def inline_data_message(message):
 		bot.send_message(message.chat.id,'Я - <b>{0.first_name}</b>, бот созданный для предоставления информации о предстоящих матчах.\n\n'.format(bot.get_me()),
 		parse_mode='html',reply_markup=markup4)
 
-	elif (message.text.lower()=='документация по командам.'):  ####ALLOO######
+	elif (message.text.lower()=='документация по командам'):
 
 	#keyboard 6
 		markup6 = types.InlineKeyboardMarkup(row_width=2)
 		item16=types.InlineKeyboardButton('следующая команда',callback_data='next')
 		item26=types.InlineKeyboardButton('вернуться в меню',callback_data='back')
 		markup6.add(item16,item26)
+
 		i=1
 		bot.send_message(message.chat.id,slovarb[i],parse_mode='html', reply_markup=markup6)
 	
@@ -83,26 +86,28 @@ def inline_data_message(message):
 
 		bot.send_message(message.chat.id, 'Я не понимаю, что вы хотите, выберите 1 из кнопок снизу.',reply_markup=markup)
 
-
 @bot.callback_query_handler(func=lambda call: True)  #ответ на вызов inline button'ov #ф-ция lambda служит для првоерки сообщения, если лямбда возвращает True, сообщение обрабатывается декорированной функцией, чтобы все сообщения обрабатывались этой функцией, мы просто всегда возвращаем True
 def callback_inline(call):
+
 	if call.message:
 
 		if (call.data == 'help'):
 
 			#keyboard 3
 			markup = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
-			item1 = types.KeyboardButton('Суть бота (если не понятна).')
-			item2 = types.KeyboardButton('Документация по командам.')
+			item1 = types.KeyboardButton('Суть бота (если не понятна)')
+			item2 = types.KeyboardButton('Документация по командам')
 			markup.add(item1,item2)
 
 			bot.send_message(call.message.chat.id,text = '<b>Выберите снизу кнопку для дальнейшей работы.</b>',parse_mode='html',reply_markup=markup)
 
 		elif(call.data == 'match'):
+
 			i=0
-			while i<len(c):
-				bot.send_message(call.message.chat.id,str(c[i].replace('\n',' ')))
+			while i<len(c):# or i<len(cd) or i<len(cdd):
+				bot.send_message(call.message.chat.id,'GMT+1 '+str(cd[i].replace('\n',' '))+'   |'+str(c[i].replace('\n',' '))+"|   "+str(cdd[i].replace('\n',' ')))
 				i+=1
+			bot.send_message(call.message.chat.id,'Для справки: время в Беларуси GMT+3.\nТ.е. нужно прибавить +2 часа к времени начала матча.')
 
 		elif(call.data == 'back'):
 
@@ -111,26 +116,43 @@ def callback_inline(call):
 			item15 = types.KeyboardButton('Help')
 			item25 = types.KeyboardButton('Предстоящие матчи')
 			markup5.add(item25,item15)
+
 			bot.send_message(call.message.chat.id,text = '<b>Выберите снизу кнопку для дальнейшей работы.</b>',parse_mode='html',reply_markup=markup5)
-
+		
 		elif(call.data == 'next'):
+
+			bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id - 1)
+			bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Выберите 1 из кнопок снизу.', reply_markup=None)
 			b=2
-			if(b<4):
+			#keyboard 6
+			markup6 = types.InlineKeyboardMarkup(row_width=2)
+			item16=types.InlineKeyboardButton('следующая команда',callback_data='next1')
+			item26=types.InlineKeyboardButton('вернуться в меню',callback_data='back')
+			markup6.add(item16,item26)
 
-		#keyboard 6
-				markup6 = types.InlineKeyboardMarkup(row_width=2)
-				item16=types.InlineKeyboardButton('следующая команда',callback_data='next')
-				item26=types.InlineKeyboardButton('вернуться в меню',callback_data='back')
-				markup6.add(item16,item26)
+			bot.send_message(call.message.chat.id,slovarb[b],parse_mode='html', reply_markup=markup6)
 
-				bot.send_message(call.message.chat.id,slovarb[b],parse_mode='html', reply_markup=markup6)
-				b+=1
-		# удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
-		bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Я не понимаю что вы хотите, выберите 1 из кнопок снизу.', reply_markup=None)
+		elif(call.data == 'next1'):
+
+			bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id - 1)
+			bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Выберите 1 из кнопок снизу.', reply_markup=None)
+			b=3
+
+			#keyboard 7
+			markup7 = types.InlineKeyboardMarkup(row_width=2)
+			item17=types.InlineKeyboardButton('следующая команда',callback_data='next')
+			item27=types.InlineKeyboardButton('вернуться в меню',callback_data='back')
+			markup7.add(item17,item27)
+
+			bot.send_message(call.message.chat.id,slovarb[b],parse_mode='html', reply_markup=markup7)
+
+		else:
+		    # удаление inline кнопок, в сообщении "Я не понимаю, что вы хотите, выберите 1 из кнопок снизу."
+			bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Я не понимаю что вы хотите, выберите 1 из кнопок снизу.', reply_markup=None)
 
 		# надо обновить клавиатуру, чтобы после полученной информации кнопки снизу менялись на обычные
 		# при ответе на Предстоящие матчи кнопки должны менятся на что-то соответсвующее (например: выбор вида спорта)
-		# (можно использовать обычное добавление клавиатуры к пустому сообщению)
+		# (можно использовать обычное добавление клавиатуры к пустому сообщению) - нельзя сделать пустое сообщение...
 
 #	@bot.message_handler(func=lambda c:True, content_types=['text'])#этот блок выполнится если юзер отправит боту сообщение
 #	def info_message(message):
