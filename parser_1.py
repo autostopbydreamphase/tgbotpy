@@ -1,15 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
-k1=0
+d1=0
 URL = 'https://www.hltv.org/matches'
-reqs = requests.get(URL)
-soup = BeautifulSoup(reqs.text,'lxml')
-cdd=[line.getText()for line in soup.find_all('div',class_='matchEventName gtSmartphone-only')]
-while k1<=len(cdd):
-	print(cdd[k1].replace('\n','-'))
-	k1+=1
+URL1 = 'https://dota2.ru/esport/matches/'
 
-#URL = 'https://game-tournaments.com/csgo/matches'
+
+reqs = requests.get(URL1)
+soup = BeautifulSoup(reqs.text,'lxml')
+d=[line.getText()for line in soup.find_all('div',class_='time')]
+dt2=0
+while dt2<(len(d)/2)-1:
+	print(str(d[dt2].replace('Ч',' Ч')))
+	dt2+=1
+
+
 #res = requests.get(URL)
 #soup = BeautifulSoup(res.text,'lxml')
 ##c = [soup.find_all('a',class_='mlink'.find_all('Матч'))]
