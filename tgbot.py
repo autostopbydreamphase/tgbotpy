@@ -52,9 +52,11 @@ def inline_data_message(message):
 		item81 = types.KeyboardButton('Counter-Strike:Global Offensive')
 		item82 = types.KeyboardButton('Dota 2')
 		markup8.add(item82,item81)
+		
 		bot.send_message(message.chat.id,'Выберите дисциплину, по которой вы хотите получить матчи.',parse_mode='html', reply_markup=markup8)
 
 	elif(message.text.lower() == 'counter-strike:global offensive'):
+
 		i=0
 		while i<len(c):# or i<len(cd) or i<len(cdd):
 			bot.send_message(message.chat.id,'GMT+1 '+str(cd[i].replace('\n',' '))+'   |'+str(c[i].replace('\n',' '))+"|   "+str(cdd[i].replace('\n',' ')))
@@ -69,7 +71,6 @@ def inline_data_message(message):
 		bot.send_message(message.chat.id,'Для справки: время в Беларуси GMT+3.\nТ.е. нужно прибавить +2 часа к времени начала матча.\n<b>LIVE</b> - обозначает, что матч уже идет в live-доступе.\nВсе матчи идут по порядку.',parse_mode='html')
 		bot.send_message(message.chat.id,'Для продолжение работы с ботом выберите кнопку снизу или перезапустите',reply_markup=markup9)
 
-
 	elif(message.text.lower() == 'dota 2'):
 		dt2=0
 		dtt=0
@@ -79,6 +80,7 @@ def inline_data_message(message):
 		item10 = types.KeyboardButton('Help')
 		item10 = types.KeyboardButton('Предстоящие матчи')
 		markup10.add(item10,item10)
+
 		while dt2<len(dt)-1:
 			bot.send_message(message.chat.id,str(dt[dtt].replace('Ч',' ч'))+' | '+str(d[dt2])+' vs '+str(d[dt2+1]))
 			dt2+=2
@@ -87,6 +89,7 @@ def inline_data_message(message):
 
 	elif(message.text.lower()=='help' or message.text.lower()=='/help'):
 
+	#keyboard 1
 		markup1 = types.ReplyKeyboardMarkup(resize_keyboard=True,row_width=1)
 		item11 = types.KeyboardButton('Суть бота (если не понятна)')
 		item21 = types.KeyboardButton('Документация по командам')
@@ -163,6 +166,7 @@ def callback_inline(call):
 			bot.delete_message(chat_id=call.message.chat.id, message_id=call.message.message_id - 1)
 			bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text='Выберите 1 из кнопок снизу.', reply_markup=None)
 			b=2
+
 			#keyboard 6
 			markup6 = types.InlineKeyboardMarkup(row_width=2)
 			item16=types.InlineKeyboardButton('следующая команда',callback_data='next1')
@@ -205,6 +209,5 @@ def callback_inline(call):
 #@bot.message_handler(commands=['start'])
 #@bot.message_handler(content_types=['text'])
 #@bot.callback_query_handler(func=lambda call: True)
-
 
 bot.polling(none_stop=True)
